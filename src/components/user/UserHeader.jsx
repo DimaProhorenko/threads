@@ -1,10 +1,31 @@
 import React from "react";
-import { Box, Flex, Heading, Link, Stack, Text } from "@chakra-ui/react";
-import { FaInstagram, FaFacebook } from "react-icons/fa";
+import {
+  Box,
+  Button,
+  Flex,
+  Heading,
+  Link,
+  Stack,
+  Text,
+} from "@chakra-ui/react";
+import { FaInstagram } from "react-icons/fa";
+import { CiCircleMore } from "react-icons/ci";
 
 import { Avatar } from "../ui/avatar";
+import { useColorModeValue } from "../ui/color-mode";
+import { MenuContent, MenuItem, MenuRoot, MenuTrigger } from "../ui/menu";
+import { toaster } from "../ui/toaster";
 
 const UserHeader = () => {
+  const copyURL = () => {
+    const currentURL = window.location.href;
+    navigator.clipboard.writeText(currentURL);
+    toaster.create({
+      title: "URL copied",
+      type: "success",
+      isClosable: true,
+    });
+  };
   return (
     <Stack gap={4} alignItems={"start"}>
       <Flex justifyContent={"space-between"} w={"full"}>
@@ -14,7 +35,7 @@ const UserHeader = () => {
             <Text fontSize={"sm"}>markzuckerberg</Text>
             <Text
               fontSize={"xs"}
-              bg={"gray.800"}
+              bg={useColorModeValue("gray.200", "gray.800")}
               paddingInline={2}
               paddingBlock={1}
               color={"gray.500"}
@@ -35,14 +56,42 @@ const UserHeader = () => {
           <Box w={1} h={1} borderRadius={"50%"} bg={"gray.500"}></Box>
           <Link color={"inherit"}>instagram</Link>
         </Flex>
-        <Flex gap={2}>
-          <Link>
-            <FaInstagram />
+        <Flex gap={2} color={"gray.500"}>
+          <Link color={"inherit"}>
+            <FaInstagram size={25} />
           </Link>
-          <Link>
-            <FaFacebook />
-          </Link>
+          <MenuRoot>
+            <MenuTrigger asChild>
+              <Button variant={"ghost"}>
+                <CiCircleMore size={28} />
+              </Button>
+            </MenuTrigger>
+            <MenuContent>
+              <MenuItem onClick={copyURL}>Copy Link</MenuItem>
+            </MenuContent>
+          </MenuRoot>
         </Flex>
+      </Flex>
+
+      <Flex w={"full"}>
+        <Box
+          textAlign={"center"}
+          flex={1}
+          borderBottom={"1px solid white"}
+          cursor={"pointer"}
+          pb={"3"}
+        >
+          <Heading as={"h3"}>Threads</Heading>
+        </Box>
+        <Box
+          textAlign={"center"}
+          flex={1}
+          borderBottom={"1px solid gray"}
+          color={"gray.500"}
+        >
+          <Heading as={"h3"}>Replies</Heading>
+        </Box>
+        <Box></Box>
       </Flex>
     </Stack>
   );
