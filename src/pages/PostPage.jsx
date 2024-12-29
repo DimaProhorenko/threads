@@ -10,6 +10,8 @@ const PostPage = () => {
       <PostHeader />
       <PostBody />
       <Comment />
+      <Comment />
+      <Comment />
     </Stack>
   );
 };
