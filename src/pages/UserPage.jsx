@@ -5,7 +5,7 @@ import React from "react";
 
 const UserPage = () => {
   return (
-    <Stack gap={4}>
+    <Stack gap={8} paddingBlockEnd={4}>
       <UserHeader />
       <UserPost />
       <UserPost />

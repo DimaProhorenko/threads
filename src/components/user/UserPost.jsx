@@ -3,6 +3,7 @@ import { BsThreeDots } from "react-icons/bs";
 
 import React from "react";
 import { Avatar } from "../ui/avatar";
+import PostActions from "./PostActions";
 
 const UserPost = () => {
   return (
@@ -54,9 +55,16 @@ const UserPost = () => {
           overflow={"hidden"}
           border="1px solid"
           borderColor={"gray.500"}
+          marginBlockEnd={2}
         >
           <Image alt="First Post" src="/post1.png" />
         </Box>
+        <PostActions />
+        <Flex alignItems={"center"} gap={2} color={"gray.500"}>
+          <Text fontSize={"sm"}>123 Replies</Text>
+          <Box w={"1"} h={"1"} borderRadius={"full"} bg={"gray.500"}></Box>
+          <Text fontSize={"sm"}>456 Likes</Text>
+        </Flex>
       </Stack>
     </Flex>
   );
