@@ -77,3 +77,25 @@ export const likeUnlikePost = async (req, res) => {
     sendServerError(error, res);
   }
 };
+
+export const commentOnPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { text } = req.body;
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ msg: "Post not found" });
+    }
+
+    if (!text || text.trim().length < 1) {
+      return res.status(400).json({ msg: "Enter comment text" });
+    }
+
+    post.replies.push({ userId: req.user._id, text });
+    await post.save();
+    return res.status(200).json({ msg: "Commented" });
+  } catch (error) {
+    sendServerError(error, res);
+  }
+};
