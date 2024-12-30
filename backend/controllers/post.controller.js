@@ -16,3 +16,16 @@ export const createPost = async (req, res) => {
     sendServerError(error, res);
   }
 };
+
+export const getPost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+    if (!post) {
+      return res.status(404).json({ msg: "Post not found" });
+    }
+    return res.status(200).json({ data: post });
+  } catch (error) {
+    sendServerError(error, res);
+  }
+};
