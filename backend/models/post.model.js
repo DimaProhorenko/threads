@@ -15,10 +15,13 @@ const postSchema = mongoose.Schema(
       type: String,
       default: "",
     },
-    likes: {
-      type: Number,
-      default: 0,
-    },
+    likes: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: 0,
+      },
+    ],
     replies: [
       {
         userId: {
