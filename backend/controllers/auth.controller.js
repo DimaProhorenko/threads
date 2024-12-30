@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import { generateAndSetCookie } from "../utils/cookies.js";
 
 export const signup = async (req, res) => {
   try {
@@ -29,8 +30,13 @@ export const signup = async (req, res) => {
       email,
       password,
     });
-    await user.save();
-    return res.status(200).json({ msg: "Success", data: { ...user._doc } });
+
+    const newUser = await user.save();
+    if (!newUser) {
+      return res.status(400).json({ msg: "Invalid data" });
+    }
+    generateAndSetCookie(user._id, res);
+    return res.status(200).json({ msg: "Success", data: { ...newUser._doc } });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ msg: error.message });
