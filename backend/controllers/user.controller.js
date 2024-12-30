@@ -36,6 +36,43 @@ export const followUnfollow = async (req, res) => {
     await userToModify.save();
     return res.status(200).json({ msg: "User followed" });
   } catch (error) {
-    sendServerError(error);
+    sendServerError(error, res);
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  try {
+    const { name, username, bio, email, password, newPassword, profileImage } =
+      req.body;
+
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    if (password && newPassword) {
+      if (newPassword.length < 6 || password.length < 6) {
+        return res
+          .status(400)
+          .json({ msg: "Password must be at least 6 characters" });
+      }
+      const isPasswordMatch = await user.comparePasswords(password);
+
+      if (!isPasswordMatch) {
+        return res.status(400).json({ msg: "Old Passwords must match" });
+      }
+      user.password = password;
+    }
+
+    user.name = name || user.name;
+    user.username = username || user.username;
+    user.email = email || user.email;
+    user.bio = bio || user.bio;
+
+    await user.save();
+
+    return res.status(200).json({ data: { ...user._doc, password: null } });
+  } catch (error) {
+    sendServerError(error, res);
   }
 };
