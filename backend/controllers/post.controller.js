@@ -29,3 +29,22 @@ export const getPost = async (req, res) => {
     sendServerError(error, res);
   }
 };
+
+export const deletePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).json({ msg: "Post not found" });
+    }
+
+    if (postId !== post.creator.toString()) {
+      return res.status(403).json({ msg: "You are not the owner" });
+    }
+
+    await post.deleteOne();
+
+    return res.status(200).json({ msg: "Post deleted" });
+  } catch (error) {}
+};
