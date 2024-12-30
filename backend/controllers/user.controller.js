@@ -1,5 +1,6 @@
 import User from "../models/user.model.js";
 import { sendServerError } from "../utils/errors.js";
+import { sendUserProfile } from "../helpers/user.helper.js";
 
 export const followUnfollow = async (req, res) => {
   try {
@@ -38,6 +39,15 @@ export const followUnfollow = async (req, res) => {
   } catch (error) {
     sendServerError(error, res);
   }
+};
+
+export const getProfile = async (req, res) => {
+  sendUserProfile(res, req.user._id);
+};
+
+export const getProfileById = async (req, res) => {
+  const { id } = req.params;
+  sendUserProfile(res, id);
 };
 
 export const updateProfile = async (req, res) => {
