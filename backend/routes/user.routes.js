@@ -3,7 +3,7 @@ import { protectedRoute } from "../middleware/protectedRoute.js";
 import {
   followUnfollow,
   getProfile,
-  getProfileById,
+  getProfileByUsername,
   updateProfile,
 } from "../controllers/user.controller.js";
 
@@ -12,6 +12,6 @@ const router = express.Router();
 router.post("/follow/:id", protectedRoute, followUnfollow);
 router.post("/update", protectedRoute, updateProfile);
 router.get("/profile", protectedRoute, getProfile);
-router.get("/profile/:id", protectedRoute, getProfileById);
+router.get("/profile/:username", protectedRoute, getProfileByUsername);
 
 export default router;

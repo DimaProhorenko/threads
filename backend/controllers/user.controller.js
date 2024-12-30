@@ -50,6 +50,19 @@ export const getProfileById = async (req, res) => {
   sendUserProfile(res, id);
 };
 
+export const getProfileByUsername = async (req, res) => {
+  try {
+    const { username } = req.params;
+    const user = await User.findOne({ username }).select("-password");
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+    return res.status(200).json({ data: user });
+  } catch (error) {
+    sendServerError(error, res);
+  }
+};
+
 export const updateProfile = async (req, res) => {
   try {
     const { name, username, bio, email, password, newPassword, profileImage } =
