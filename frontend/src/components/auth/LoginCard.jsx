@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useSetRecoilState } from "recoil";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { useColorModeValue } from "../ui/color-mode";
 import {
   Box,
   Button,
@@ -8,14 +8,17 @@ import {
   Group,
   Heading,
   Input,
+  Link,
   Stack,
   Text,
 } from "@chakra-ui/react";
 import { Field } from "../ui/field";
-import Link from "../ui/Link";
+import { useColorModeValue } from "../ui/color-mode";
+import authScreenAtom from "@/atoms/auth.atom";
 
 const LoginCard = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const setAuthScreenState = useSetRecoilState(authScreenAtom);
 
   return (
     <Stack paddingBlock={1} paddingInline={2} spaceY={4} maxWidth={"500px"}>
@@ -61,9 +64,9 @@ const LoginCard = () => {
               <Text textAlign={"center"}>
                 Don't have an account?{" "}
                 <Link
-                  to={"/signup"}
                   color={"blue.400"}
                   _hover={{ color: "blue.500" }}
+                  onClick={() => setAuthScreenState("signup")}
                 >
                   Signup
                 </Link>

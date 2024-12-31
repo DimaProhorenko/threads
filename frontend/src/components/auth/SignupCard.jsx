@@ -7,16 +7,18 @@ import {
   Flex,
   Group,
   Heading,
-  HStack,
   Input,
+  Link,
   Stack,
   Text,
 } from "@chakra-ui/react";
 import { Field } from "../ui/field";
-import Link from "../ui/Link";
+import { useSetRecoilState } from "recoil";
+import authScreenAtom from "@/atoms/auth.atom";
 
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false);
+  const setAuthScreenState = useSetRecoilState(authScreenAtom);
 
   return (
     <Stack paddingBlock={1} paddingInline={2} spaceY={4} maxWidth={"500px"}>
@@ -70,9 +72,11 @@ export default function SignupCard() {
               <Text textAlign={"center"}>
                 Already a user?{" "}
                 <Link
-                  to={"/login"}
                   color={"blue.400"}
                   _hover={{ color: "blue.500" }}
+                  onClick={() => {
+                    setAuthScreenState("login");
+                  }}
                 >
                   Login
                 </Link>
