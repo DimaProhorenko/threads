@@ -1,4 +1,6 @@
 import { useState } from "react";
+import axios from "axios";
+import { useSetRecoilState } from "recoil";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useColorModeValue } from "../ui/color-mode";
 import {
@@ -13,12 +15,52 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { Field } from "../ui/field";
-import { useSetRecoilState } from "recoil";
 import authScreenAtom from "@/atoms/auth.atom";
+import { toaster } from "../ui/toaster";
 
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false);
+  const [inputs, setInputs] = useState({
+    name: "",
+    username: "",
+    email: "",
+    password: "",
+  });
+
   const setAuthScreenState = useSetRecoilState(authScreenAtom);
+
+  const updateInput = (e) => {
+    setInputs((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post("/api/auth/signup", inputs, {
+        "Content-Type": "application/json",
+      });
+
+      console.log(res);
+      if (res.status === 200 || res.status === 201) {
+        setInputs({
+          name: "",
+          username: "",
+          email: "",
+          password: "",
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      toaster.create({
+        type: "error",
+        title: "Error",
+        description: error.response.data.error,
+      });
+    }
+  };
 
   return (
     <Stack paddingBlock={1} paddingInline={2} spaceY={4} maxWidth={"500px"}>
@@ -31,24 +73,41 @@ export default function SignupCard() {
         padding={8}
         boxShadow={"lg"}
       >
-        <form action="">
+        <form onSubmit={handleSubmit}>
           <Stack spaceY={4}>
             <Flex gap={4} flexDirection={{ base: "column", sm: "row" }}>
-              <Field label="First Name" required>
-                <Input type="text" variant={"outline"} />
+              <Field label="Full Name" required>
+                <Input
+                  type="text"
+                  variant={"outline"}
+                  name="name"
+                  onChange={updateInput}
+                />
               </Field>
-              <Field label="Last Name" required>
-                <Input type="text" variant={"outline"} />
+              <Field label="Username" required>
+                <Input
+                  type="text"
+                  variant={"outline"}
+                  onChange={updateInput}
+                  name="username"
+                />
               </Field>
             </Flex>
             <Field label="Email" required>
-              <Input type="text" variant={"outline"} />
+              <Input
+                type="text"
+                variant={"outline"}
+                onChange={updateInput}
+                name="email"
+              />
             </Field>
             <Field label="Password" required>
               <Group attached w={"full"}>
                 <Input
                   type={showPassword ? "text" : "password"}
                   variant={"outline"}
+                  onChange={updateInput}
+                  name="password"
                 />
                 <Button
                   variant={"outline"}
@@ -62,6 +121,7 @@ export default function SignupCard() {
             </Field>
             <Stack spaceY={8}>
               <Button
+                type="submit"
                 size={"lg"}
                 color={"white"}
                 bg={useColorModeValue("gray.600", "gray.700")}
