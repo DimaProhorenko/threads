@@ -4,12 +4,14 @@ import {
   commentOnPost,
   createPost,
   deletePost,
+  getFeedPosts,
   getPost,
   likeUnlikePost,
 } from "../controllers/post.controller.js";
 
 const router = express.Router();
 
+router.get("/feed", protectedRoute, getFeedPosts);
 router.get("/:postId", protectedRoute, getPost);
 router.post("/", protectedRoute, createPost);
 router.delete("/:postId", protectedRoute, deletePost);

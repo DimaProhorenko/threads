@@ -2,10 +2,15 @@ import React from "react";
 import { Link as ChakraLink } from "@chakra-ui/react";
 import { Link as RouteLink } from "react-router-dom";
 
-const Link = ({ children, to }) => {
+const Link = ({ children, to, ...props }) => {
   return (
-    <ChakraLink asChild _hover={{ textDecoration: true }}>
-      <RouteLink to={to}>{children}</RouteLink>
+    <ChakraLink
+      as={RouteLink}
+      to={to}
+      _hover={{ textDecoration: true }}
+      {...props}
+    >
+      {children}
     </ChakraLink>
   );
 };

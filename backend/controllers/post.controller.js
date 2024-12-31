@@ -1,4 +1,5 @@
 import Post from "../models/post.model.js";
+import User from "../models/user.model.js";
 import { sendServerError } from "../utils/errors.js";
 
 export const createPost = async (req, res) => {
@@ -95,6 +96,22 @@ export const commentOnPost = async (req, res) => {
     post.replies.push({ userId: req.user._id, text });
     await post.save();
     return res.status(200).json({ msg: "Commented" });
+  } catch (error) {
+    sendServerError(error, res);
+  }
+};
+
+export const getFeedPosts = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select("-password");
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    const posts = await Post.find({ creator: { $in: user.following } }).sort({
+      createdAt: -1,
+    });
+    return res.status(200).json({ data: posts });
   } catch (error) {
     sendServerError(error, res);
   }
