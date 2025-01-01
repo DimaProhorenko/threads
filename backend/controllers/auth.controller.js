@@ -1,7 +1,11 @@
 import User from "../models/user.model.js";
 import { generateAndSetCookie } from "../utils/cookies.js";
-import { sendServerError } from "../utils/errors.js";
-import { sendErrorResponse, sendResponse } from "../utils/responseHandler.js";
+// import { sendServerError } from "../utils/errors.js";
+import {
+  sendErrorResponse,
+  sendResponse,
+  sendServerError,
+} from "../utils/responseHandler.js";
 
 export const signup = async (req, res) => {
   try {
@@ -81,15 +85,16 @@ export const login = async (req, res) => {
       .status(200)
       .json({ msg: "Success", data: { ...existingUser._doc, password: null } });
   } catch (error) {
-    sendServerError(error, res);
+    sendServerError(res, error);
   }
 };
 
 export const logout = (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
-    res.status(200).json({ message: "Logged out successfully" });
+    return sendResponse(res, 200, "Success", "Logged out successfully");
+    // res.status(200).json({ message: "Logged out successfully" });
   } catch (error) {
-    sendServerError(error, res);
+    sendServerError(res, error);
   }
 };

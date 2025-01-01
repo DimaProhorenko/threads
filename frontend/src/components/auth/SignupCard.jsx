@@ -17,6 +17,7 @@ import {
 import { Field } from "../ui/field";
 import authScreenAtom from "@/atoms/auth.atom";
 import { toaster } from "../ui/toaster";
+import userAtom from "@/atoms/user.atom";
 
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +27,7 @@ export default function SignupCard() {
     email: "",
     password: "",
   });
+  const setUser = useSetRecoilState(userAtom);
 
   const setAuthScreenState = useSetRecoilState(authScreenAtom);
 
@@ -43,13 +45,18 @@ export default function SignupCard() {
         "Content-Type": "application/json",
       });
 
-      console.log(res);
       if (res.status === 200 || res.status === 201) {
         setInputs({
           name: "",
           username: "",
           email: "",
           password: "",
+        });
+        localStorage.setItem("threads-user", JSON.stringify(res.data.data));
+        setUser(res.data.data);
+        toaster.create({
+          type: "success",
+          title: "Signed up",
         });
       }
     } catch (error) {
@@ -81,6 +88,7 @@ export default function SignupCard() {
                   type="text"
                   variant={"outline"}
                   name="name"
+                  value={inputs.name}
                   onChange={updateInput}
                 />
               </Field>
@@ -88,6 +96,7 @@ export default function SignupCard() {
                 <Input
                   type="text"
                   variant={"outline"}
+                  value={inputs.username}
                   onChange={updateInput}
                   name="username"
                 />
@@ -97,6 +106,7 @@ export default function SignupCard() {
               <Input
                 type="text"
                 variant={"outline"}
+                value={inputs.email}
                 onChange={updateInput}
                 name="email"
               />
@@ -107,6 +117,7 @@ export default function SignupCard() {
                   type={showPassword ? "text" : "password"}
                   variant={"outline"}
                   onChange={updateInput}
+                  value={inputs.password}
                   name="password"
                 />
                 <Button
