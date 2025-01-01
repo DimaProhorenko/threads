@@ -1,3 +1,5 @@
+import { v2 as cloudinary } from "cloudinary";
+
 import User from "../models/user.model.js";
 import { sendServerError } from "../utils/errors.js";
 import { sendUserProfile } from "../helpers/user.helper.js";
@@ -67,6 +69,7 @@ export const updateProfile = async (req, res) => {
   try {
     const { name, username, bio, email, password, newPassword, profileImage } =
       req.body;
+    let uploadedImage = "";
 
     const user = await User.findById(req.user._id);
     if (!user) {
@@ -87,10 +90,22 @@ export const updateProfile = async (req, res) => {
       user.password = password;
     }
 
+    if (profileImage) {
+      const uploadedResponse = await cloudinary.uploader.upload(profileImage);
+      uploadedImage = uploadedResponse.secure_url;
+
+      if (user.profileImage) {
+        await cloudinary.uploader.destroy(
+          user.profilePic.split("/").pop().split(".")[0]
+        );
+      }
+    }
+
     user.name = name || user.name;
     user.username = username || user.username;
     user.email = email || user.email;
     user.bio = bio || user.bio;
+    user.profileImage = uploadedImage || user.profileImage;
 
     await user.save();
 

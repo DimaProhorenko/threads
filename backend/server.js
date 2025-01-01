@@ -2,6 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
+import { v2 as clodinary } from "cloudinary";
 
 import connectDB from "./db/connectDB.js";
 import authRoutes from "./routes/auth.routes.js";
@@ -9,6 +10,12 @@ import userRoutes from "./routes/user.routes.js";
 import postRoutes from "./routes/post.routes.js";
 
 dotenv.config();
+
+clodinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 connectDB();
 
@@ -25,7 +32,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
 
 mongoose.connection.once("open", () => {
-  app.listen(5000, () => {
+  app.listen(PORT, () => {
     console.log("Server");
   });
 });

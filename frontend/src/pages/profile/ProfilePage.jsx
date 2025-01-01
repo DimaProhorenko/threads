@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   DialogBody,
@@ -11,6 +11,7 @@ import {
 import { Field } from "@/components/ui/field";
 import PasswordInput from "@/components/ui/PasswordInput";
 import {
+  Box,
   DialogActionTrigger,
   DialogFooter,
   Flex,
@@ -21,6 +22,7 @@ import {
 import { useRecoilState } from "recoil";
 import userAtom from "@/atoms/user.atom";
 import { Avatar } from "@/components/ui/avatar";
+import usePreviewImage from "@/hooks/usePreviewImage";
 
 const ProfilePage = () => {
   const [user, setUser] = useRecoilState(userAtom);
@@ -32,6 +34,9 @@ const ProfilePage = () => {
     password: "",
     confirmPassword: "",
   });
+  const { imgUrl, handleImageChange } = usePreviewImage();
+
+  const fileRef = useRef(null);
 
   const updateInput = (e) => {
     setInputs((prevState) => ({
@@ -53,8 +58,18 @@ const ProfilePage = () => {
             <form>
               <Stack spaceY={4}>
                 <Flex alignItems={"center"} gap={4}>
-                  <Avatar w="100px" h="100px" src="/mark.jpg" />
-                  <Button>Change Profile Picture</Button>
+                  <Avatar size="2xl" src={imgUrl || user.profileImage} />
+                  <Box>
+                    <Button onClick={() => fileRef.current.click()}>
+                      Change Profile Picture
+                    </Button>
+                    <Input
+                      type="file"
+                      hidden
+                      ref={fileRef}
+                      onChange={handleImageChange}
+                    />
+                  </Box>
                 </Flex>
                 <Field label="Full Name">
                   <Input
