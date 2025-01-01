@@ -59,31 +59,34 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res.status(400).json({ msg: "All fields are required" });
+      return sendErrorResponse(res, 400, "All fields are required");
     }
 
     if (password.length < 6) {
-      return res
-        .status(400)
-        .json({ msg: "Password must be at least 6 characters" });
+      return sendErrorResponse(
+        res,
+        400,
+        "Password must be at least 6 characters"
+      );
     }
 
     const existingUser = await User.findOne({ email });
 
     if (!existingUser) {
-      return res.status(404).json({ msg: "User not found" });
+      return sendErrorResponse(res, 404, "User not found");
     }
 
     const passwordsMatch = await existingUser.comparePasswords(password);
 
     if (!passwordsMatch) {
-      return res.status(401).json({ msg: "Password is incorrect" });
+      return sendErrorResponse(res, 401, "Password is incorrect");
     }
 
     generateAndSetCookie(existingUser._id, res);
-    return res
-      .status(200)
-      .json({ msg: "Success", data: { ...existingUser._doc, password: null } });
+    return sendResponse(res, 200, "Success", "Logged in successfully", {
+      ...existingUser._doc,
+      password: null,
+    });
   } catch (error) {
     sendServerError(res, error);
   }

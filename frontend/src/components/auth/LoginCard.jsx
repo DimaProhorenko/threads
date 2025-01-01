@@ -15,10 +15,42 @@ import {
 import { Field } from "../ui/field";
 import { useColorModeValue } from "../ui/color-mode";
 import authScreenAtom from "@/atoms/auth.atom";
+import userAtom from "@/atoms/user.atom";
+import { toaster } from "../ui/toaster";
+import { createToast, errorToast, successToast } from "@/utils/toasts";
+import axios from "axios";
 
 const LoginCard = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [inputs, setInputs] = useState({ email: "", password: "" });
   const setAuthScreenState = useSetRecoilState(authScreenAtom);
+  const setUser = useSetRecoilState(userAtom);
+
+  const updateInput = (e) => {
+    setInputs((prevState) => ({
+      ...prevState,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Hello");
+    try {
+      const res = await axios.post("/api/auth/login", inputs);
+
+      console.log(res);
+      if (res.status === 200) {
+        setUser(res.data.data);
+        localStorage.setItem("threads-user", JSON.stringify(res.data.data));
+        setInputs({ email: "", password: "" });
+        successToast("Logged in");
+      }
+    } catch (error) {
+      console.log(error);
+      errorToast("Login failed", error.response.data.error);
+    }
+  };
 
   return (
     <Stack paddingBlock={1} paddingInline={2} spaceY={4} maxWidth={"500px"}>
@@ -31,16 +63,25 @@ const LoginCard = () => {
         padding={8}
         boxShadow={"lg"}
       >
-        <form action="">
+        <form onSubmit={handleSubmit}>
           <Stack spaceY={4}>
             <Field label="Email" required>
-              <Input type="text" variant={"outline"} />
+              <Input
+                type="text"
+                variant={"outline"}
+                name="email"
+                value={inputs.email}
+                onChange={updateInput}
+              />
             </Field>
             <Field label="Password" required>
               <Group attached w={"full"}>
                 <Input
                   type={showPassword ? "text" : "password"}
                   variant={"outline"}
+                  name="password"
+                  value={inputs.password}
+                  onChange={updateInput}
                 />
                 <Button
                   variant={"outline"}
@@ -54,6 +95,7 @@ const LoginCard = () => {
             </Field>
             <Stack spaceY={8}>
               <Button
+                type="submit"
                 size={"lg"}
                 color={"white"}
                 bg={useColorModeValue("gray.600", "gray.700")}

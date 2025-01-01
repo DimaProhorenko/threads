@@ -2,12 +2,12 @@ import { Button } from "@chakra-ui/react";
 import axios from "axios";
 import React from "react";
 import { IoLogOut } from "react-icons/io5";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import userAtom from "@/atoms/user.atom";
 import { toaster } from "./toaster";
 
 const LogoutButton = () => {
-  const [user, setUser] = useRecoilState(userAtom);
+  const setUser = useSetRecoilState(userAtom);
 
   const logout = async () => {
     try {
