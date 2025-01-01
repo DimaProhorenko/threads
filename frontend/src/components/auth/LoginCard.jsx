@@ -1,30 +1,33 @@
 import { useState } from "react";
-import { useSetRecoilState } from "recoil";
+import { useRecoilState, useSetRecoilState } from "recoil";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import {
   Box,
   Button,
-  Flex,
   Group,
   Heading,
   Input,
   Link,
+  Spinner,
   Stack,
   Text,
 } from "@chakra-ui/react";
+import axios from "axios";
+
 import { Field } from "../ui/field";
 import { useColorModeValue } from "../ui/color-mode";
+import { errorToast, successToast } from "@/utils/toasts";
+
 import authScreenAtom from "@/atoms/auth.atom";
-import userAtom from "@/atoms/user.atom";
-import { toaster } from "../ui/toaster";
-import { createToast, errorToast, successToast } from "@/utils/toasts";
-import axios from "axios";
+import loadingAtom from "@/atoms/loading.atom";
+import useAuthActions from "@/hooks/useAuthActions";
 
 const LoginCard = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [inputs, setInputs] = useState({ email: "", password: "" });
   const setAuthScreenState = useSetRecoilState(authScreenAtom);
-  const setUser = useSetRecoilState(userAtom);
+  const [isLoading, setIsLoading] = useRecoilState(loadingAtom);
+  const { login } = useAuthActions();
 
   const updateInput = (e) => {
     setInputs((prevState) => ({
@@ -35,20 +38,20 @@ const LoginCard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Hello");
+    setIsLoading(true);
     try {
       const res = await axios.post("/api/auth/login", inputs);
 
       console.log(res);
       if (res.status === 200) {
-        setUser(res.data.data);
-        localStorage.setItem("threads-user", JSON.stringify(res.data.data));
+        login(res.data.data);
         setInputs({ email: "", password: "" });
         successToast("Logged in");
       }
     } catch (error) {
-      console.log(error);
       errorToast("Login failed", error.response.data.error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -101,7 +104,7 @@ const LoginCard = () => {
                 bg={useColorModeValue("gray.600", "gray.700")}
                 _hover={{ bg: useColorModeValue("gray.700", "gray.800") }}
               >
-                Login
+                {isLoading ? <Spinner /> : "Login"}
               </Button>
               <Text textAlign={"center"}>
                 Don't have an account?{" "}

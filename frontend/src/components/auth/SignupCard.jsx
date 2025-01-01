@@ -16,8 +16,8 @@ import {
 } from "@chakra-ui/react";
 import { Field } from "../ui/field";
 import authScreenAtom from "@/atoms/auth.atom";
-import { toaster } from "../ui/toaster";
 import userAtom from "@/atoms/user.atom";
+import { errorToast, successToast } from "@/utils/toasts";
 
 export default function SignupCard() {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,18 +54,11 @@ export default function SignupCard() {
         });
         localStorage.setItem("threads-user", JSON.stringify(res.data.data));
         setUser(res.data.data);
-        toaster.create({
-          type: "success",
-          title: "Signed up",
-        });
+        successToast("Signed up");
       }
     } catch (error) {
       console.log(error);
-      toaster.create({
-        type: "error",
-        title: "Error",
-        description: error.response.data.error,
-      });
+      errorToast("Sign up failed", error.response.data.error);
     }
   };
 
