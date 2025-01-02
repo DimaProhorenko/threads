@@ -96,7 +96,7 @@ export const updateProfile = async (req, res) => {
 
       if (user.profileImage) {
         await cloudinary.uploader.destroy(
-          user.profilePic.split("/").pop().split(".")[0]
+          user.profileImage.split("/").pop().split(".")[0]
         );
       }
     }
