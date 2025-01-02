@@ -30,9 +30,9 @@ function App() {
           />
           <Route path={PROFILE} element={<ProfilePage />} />
           <Route path={UPDATE_PROFILE} element={<UpdateProfilePage />} />
+          <Route path="/:username" element={<UserPage />} />
         </Route>
 
-        <Route path="/:username" element={<UserPage />} />
         <Route path="/:username/post/:id" element={<PostPage />} />
       </Routes>
       <Toaster />

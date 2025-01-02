@@ -26,7 +26,7 @@ import usePreviewImage from "@/hooks/usePreviewImage";
 import { errorToast, successToast } from "@/utils/toasts";
 import axios from "axios";
 
-const ProfileUpdateModal = ({ isOpen, handleOpenChange }) => {
+const ProfileUpdateModal = () => {
   const [user, setUser] = useRecoilState(userAtom);
   const [inputs, setInputs] = useState({
     name: user.name,
@@ -68,10 +68,10 @@ const ProfileUpdateModal = ({ isOpen, handleOpenChange }) => {
   };
   return (
     <div>
-      <DialogRoot open={isOpen} onOpenChange={handleOpenChange}>
-        {/* <DialogTrigger asChild>
+      <DialogRoot>
+        <DialogTrigger asChild>
           <Button variant={"outline"}>Update Profile</Button>
-        </DialogTrigger> */}
+        </DialogTrigger>
         <DialogContent>
           <form onSubmit={submitHandler}>
             <DialogHeader>
