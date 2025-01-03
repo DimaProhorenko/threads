@@ -5,7 +5,6 @@ import { useRecoilValue } from "recoil";
 
 const ProtectedRoute = () => {
   const user = useRecoilValue(userAtom);
-  console.log(user);
   return user ? <Outlet /> : <Navigate to={"/auth"} />;
 };
 

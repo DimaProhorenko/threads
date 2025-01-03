@@ -1,3 +1,5 @@
+import { v2 as cloudinary } from "cloudinary";
+
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
 import { sendServerError } from "../utils/errors.js";
@@ -5,11 +7,23 @@ import { sendServerError } from "../utils/errors.js";
 export const createPost = async (req, res) => {
   try {
     const { text, image } = req.body;
-    const post = new Post({ text, creator: req.user._id });
+    let uploadedImage = "";
 
     if (!text.trim()) {
       return res.status(400).json({ msg: "Text field is required" });
     }
+
+    if (image) {
+      const uploadedResponse = await cloudinary.uploader.upload(image);
+      uploadedImage = uploadedResponse.secure_url;
+    }
+
+    const post = new Post({
+      text,
+      creator: req.user._id,
+      image: uploadedImage,
+    });
+
     await post.save();
 
     return res.status(200).json({ data: post });
@@ -108,9 +122,14 @@ export const getFeedPosts = async (req, res) => {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    const posts = await Post.find({ creator: { $in: user.following } }).sort({
-      createdAt: -1,
-    });
+    const posts = await Post.find({ creator: { $in: user.following } })
+      .populate({
+        path: "creator",
+        select: "username name profileImage",
+      })
+      .sort({
+        createdAt: -1,
+      });
     return res.status(200).json({ data: posts });
   } catch (error) {
     sendServerError(error, res);
