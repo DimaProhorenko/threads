@@ -9,6 +9,7 @@ import axios from "axios";
 
 const UserPage = () => {
   const [user, setUser] = useState(null);
+  const [posts, setPosts] = useState(null);
   const { username } = useParams();
 
   useEffect(() => {

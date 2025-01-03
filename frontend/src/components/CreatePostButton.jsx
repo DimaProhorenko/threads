@@ -14,13 +14,13 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Box, Image, Stack, Textarea } from "@chakra-ui/react";
-import useForm from "@/hooks/useForm";
 import { Field } from "./ui/field";
 import PreviewImage from "./ui/PreviewImage";
 import usePreviewImage from "@/hooks/usePreviewImage";
 import { CloseButton } from "./ui/close-button";
 import { errorToast, successToast } from "@/utils/toasts";
 import axios from "axios";
+import useLoading from "@/hooks/useLoading";
 
 const MAX_CHAR = 500;
 
@@ -28,6 +28,7 @@ const CreatePostButton = () => {
   const [postText, setPostText] = useState("");
   const { imgUrl, handleImageChange, setImgUrl } = usePreviewImage();
   const [remainingChars, setRemainingChars] = useState(MAX_CHAR);
+  const { isLoading, startLoading, stopLoading } = useLoading();
 
   const handleTextChange = (e) => {
     const text = e.target.value;
@@ -46,6 +47,7 @@ const CreatePostButton = () => {
     e.preventDefault();
 
     try {
+      startLoading();
       const res = await axios.post("/api/posts", {
         text: postText,
         image: imgUrl,
@@ -53,9 +55,14 @@ const CreatePostButton = () => {
 
       if (res.status === 200) {
         successToast("Post created");
+        setPostText("");
+        setImgUrl("");
+        setRemainingChars(MAX_CHAR);
       }
     } catch (error) {
       errorToast("Create post failed", error.response.data.error);
+    } finally {
+      stopLoading();
     }
   };
 
@@ -120,7 +127,7 @@ const CreatePostButton = () => {
             <DialogActionTrigger asChild>
               <Button colorPalette="gray">Close</Button>
             </DialogActionTrigger>
-            <Button type="submit" colorPalette="green">
+            <Button type="submit" colorPalette="green" loading={isLoading}>
               Save
             </Button>
           </DialogFooter>

@@ -19,6 +19,7 @@ import ProfilePage from "./pages/profile/ProfilePage";
 import { useRecoilValue } from "recoil";
 import userAtom from "./atoms/user.atom";
 import CreatePostButton from "./components/CreatePostButton";
+import LogoutButton from "./components/ui/LogoutButton";
 
 function App() {
   const user = useRecoilValue(userAtom);
@@ -34,11 +35,11 @@ function App() {
             index
             element={
               <h1>
-                <Link to={PROFILE}>Profile</Link>
+                <Link to={`/${user.username}`}>Profile</Link>
               </h1>
             }
           />
-          <Route path={PROFILE} element={<ProfilePage />} />
+          {/* <Route path={PROFILE} element={<ProfilePage />} /> */}
           <Route path={UPDATE_PROFILE} element={<UpdateProfilePage />} />
           <Route path={USER_PAGE} element={<UserPage />} />
         </Route>
@@ -46,6 +47,7 @@ function App() {
         <Route path="/:username/post/:id" element={<PostPage />} />
       </Routes>
       <Toaster />
+      {user && <LogoutButton />}
       {user && <CreatePostButton />}
     </Container>
   );

@@ -14,7 +14,12 @@ const useAuthActions = () => {
     localStorage.removeItem("threads-user");
   };
 
-  return { login, logout };
+  const updateUser = (userData) => {
+    setUser(userData);
+    localStorage.setItem("threads-user", JSON.stringify(userData));
+  };
+
+  return { login, logout, updateUser };
 };
 
 export default useAuthActions;

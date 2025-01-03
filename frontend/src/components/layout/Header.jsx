@@ -5,6 +5,7 @@ import LogoutButton from "../ui/LogoutButton";
 import HomeButton from "../ui/HomeButton";
 import { useRecoilValue } from "recoil";
 import userAtom from "@/atoms/user.atom";
+import ProfileButton from "../ui/ProfileButton";
 
 const Header = () => {
   const user = useRecoilValue(userAtom);
@@ -16,7 +17,7 @@ const Header = () => {
     >
       {user && <HomeButton />}
       <ColorModeButton />
-      {user && <LogoutButton />}
+      {user && <ProfileButton username={user.username} />}
     </Flex>
   );
 };

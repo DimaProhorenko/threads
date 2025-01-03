@@ -35,8 +35,11 @@ const LogoutButton = () => {
       minWidth="auto"
       height="auto"
       onClick={logout}
+      position={"fixed"}
+      top={0}
+      right={10}
     >
-      <IoLogOut />
+      <IoLogOut style={{ width: "25px", height: "25px" }} />
     </Button>
   );
 };
