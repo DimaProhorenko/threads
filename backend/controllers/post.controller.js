@@ -2,7 +2,11 @@ import { v2 as cloudinary } from "cloudinary";
 
 import Post from "../models/post.model.js";
 import User from "../models/user.model.js";
-import { sendServerError } from "../utils/errors.js";
+import {
+  sendErrorResponse,
+  sendResponse,
+  sendServerError,
+} from "../utils/responseHandler.js";
 
 export const createPost = async (req, res) => {
   try {
@@ -10,7 +14,7 @@ export const createPost = async (req, res) => {
     let uploadedImage = "";
 
     if (!text.trim()) {
-      return res.status(400).json({ msg: "Text field is required" });
+      return sendErrorResponse(res, 400, "Text field is required");
     }
 
     if (image) {
@@ -26,9 +30,9 @@ export const createPost = async (req, res) => {
 
     await post.save();
 
-    return res.status(200).json({ data: post });
+    return sendResponse(res, 200, "success", "Post created", post);
   } catch (error) {
-    sendServerError(error, res);
+    sendServerError(res, error);
   }
 };
 
@@ -37,11 +41,11 @@ export const getPost = async (req, res) => {
     const { postId } = req.params;
     const post = await Post.findById(postId);
     if (!post) {
-      return res.status(404).json({ msg: "Post not found" });
+      return sendErrorResponse(res, 404, "Post not found");
     }
-    return res.status(200).json({ data: post });
+    return sendResponse(res, 200, "Success", "Post retrieved", post);
   } catch (error) {
-    sendServerError(error, res);
+    sendServerError(res, error);
   }
 };
 
@@ -51,17 +55,19 @@ export const deletePost = async (req, res) => {
     const post = await Post.findById(postId);
 
     if (!post) {
-      return res.status(404).json({ msg: "Post not found" });
+      return sendErrorResponse(res, 404, "Post not found");
     }
 
     if (postId !== post.creator.toString()) {
-      return res.status(403).json({ msg: "You are not the owner" });
+      return sendErrorResponse(res, 403, "You are not the owner");
     }
 
     await post.deleteOne();
 
-    return res.status(200).json({ msg: "Post deleted" });
-  } catch (error) {}
+    return sendResponse(res, 200, "Success", "Post Deleted");
+  } catch (error) {
+    sendServerError(res, error);
+  }
 };
 
 export const likeUnlikePost = async (req, res) => {
@@ -71,7 +77,7 @@ export const likeUnlikePost = async (req, res) => {
     const post = await Post.findById(postId);
 
     if (!post) {
-      return res.status(404).json({ msg: "Post not found" });
+      return sendErrorResponse(res, 404, "Post not found");
     }
 
     const isLiked = post.likes.includes(req.user._id.toString());
@@ -81,15 +87,15 @@ export const likeUnlikePost = async (req, res) => {
       );
 
       await post.save();
-      return res.status(200).json({ msg: "Post unliked" });
+      return sendResponse(res, 200, "Success", "Post unliked");
     }
 
     post.likes.push(req.user._id);
     await post.save();
 
-    return res.status(200).json({ msg: "Post liked" });
+    return sendResponse(res, 200, "Success", "Post liked");
   } catch (error) {
-    sendServerError(error, res);
+    sendServerError(res, error);
   }
 };
 
@@ -100,18 +106,18 @@ export const commentOnPost = async (req, res) => {
     const post = await Post.findById(postId);
 
     if (!post) {
-      return res.status(404).json({ msg: "Post not found" });
+      return sendErrorResponse(res, 404, "Post not found");
     }
 
     if (!text || text.trim().length < 1) {
-      return res.status(400).json({ msg: "Enter comment text" });
+      return sendErrorResponse(res, 400, "Enter comment text");
     }
 
     post.replies.push({ userId: req.user._id, text });
     await post.save();
-    return res.status(200).json({ msg: "Commented" });
+    return sendResponse(res, 200, "Success", "Commented");
   } catch (error) {
-    sendServerError(error, res);
+    sendServerError(res, error);
   }
 };
 
@@ -119,7 +125,7 @@ export const getFeedPosts = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
     if (!user) {
-      return res.status(404).json({ msg: "User not found" });
+      return sendErrorResponse(res, 404, "User not found");
     }
 
     const posts = await Post.find({ creator: { $in: user.following } })
@@ -130,8 +136,8 @@ export const getFeedPosts = async (req, res) => {
       .sort({
         createdAt: -1,
       });
-    return res.status(200).json({ data: posts });
+    return sendResponse(res, 200, "Success", "Posts fetched", posts);
   } catch (error) {
-    sendServerError(error, res);
+    sendServerError(res, error);
   }
 };
