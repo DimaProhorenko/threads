@@ -1,21 +1,26 @@
 import { Box, Flex, Heading, Image, Stack, Text } from "@chakra-ui/react";
 import { BsThreeDots } from "react-icons/bs";
+import { formatDistanceToNow } from "date-fns";
 
 import React from "react";
 import { Avatar } from "./ui/avatar";
 import PostActions from "./user/PostActions";
+import { Link } from "react-router-dom";
 
 const Post = ({ post }) => {
   return (
     <Flex gap={3}>
       <Flex flexDirection={"column"} alignItems={"center"} gap={1}>
-        <Avatar
-          name={post.creator.name}
-          src={post.creator.profileImage}
-          size="lg"
-        />
+        <Link to={`/${post.creator.username}`}>
+          <Avatar
+            name={post.creator.name}
+            src={post.creator.profileImage}
+            size="lg"
+          />
+        </Link>
         <Box w={"1px"} h={"full"} bg={"gray.500"}></Box>
-        <Flex gap={"3px"} w={"full"}>
+        {post.replies.length === 0 && <Text textAlign={"center"}>🥱</Text>}
+        {/* <Flex gap={"3px"} w={"full"}>
           <Avatar
             name="Mark Zuckerberg"
             src="https://bit.ly/sage-adebayo"
@@ -36,19 +41,19 @@ const Post = ({ post }) => {
             marginBlockStart="3px"
             display="block"
           />
-        </Box>
+        </Box> */}
       </Flex>
       <Stack gap={2} w={"full"}>
         <Flex justifyContent={"space-between"} alignItems={"center"}>
           <Flex alignItems={"center"} gap={1} w={"full"} flex={1}>
             <Heading as={"h5"} fontSize={"sm"} textTransform={"capitalize"}>
-              {post.creator.name}
+              <Link to={`/${post.creator.username}`}>{post.creator.name}</Link>
             </Heading>
             <Image src="/verified.png" alt="verified" w={3} />
           </Flex>
           <Flex alignItems={"center"} gap={2}>
             <Text fontSize={"sm"} color={"gray.500"}>
-              1d
+              {formatDistanceToNow(new Date(post.createdAt))} ago
             </Text>
             <BsThreeDots />
           </Flex>
@@ -65,9 +70,9 @@ const Post = ({ post }) => {
         </Box>
         <PostActions />
         <Flex alignItems={"center"} gap={2} color={"gray.500"}>
-          <Text fontSize={"sm"}>123 Replies</Text>
+          <Text fontSize={"sm"}>{post.replies.length} Replies</Text>
           <Box w={"1"} h={"1"} borderRadius={"full"} bg={"gray.500"}></Box>
-          <Text fontSize={"sm"}>456 Likes</Text>
+          <Text fontSize={"sm"}>{post.likes.length} Likes</Text>
         </Flex>
       </Stack>
     </Flex>
